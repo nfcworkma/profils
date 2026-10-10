@@ -1,2 +1,7 @@
+# Jamais publiés sur GitHub (outil, PIN haché, données, logs)
 .DS_Store
 _outil/
+config.json
+**/config.json
+log.txt
+*.log
