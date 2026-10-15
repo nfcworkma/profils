@@ -1,0 +1,29 @@
+# Ajoute automatiquement le contrôle d'abonnement (garde.js) dans chaque nouvelle page créée.
+name: garde-abonnement
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+jobs:
+  garde:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Ajouter garde.js aux pages
+        run: |
+          python3 - <<'PY'
+          import glob, re
+          for f in glob.glob('*/index.html'):
+              s = open(f, encoding='utf-8').read()
+              if 'garde.js' in s:
+                  continue
+              m = re.search(r'<meta charset="?utf-8"?\s*/?>', s, re.I)
+              tag = '<script src="../garde.js"></script>'
+              s = s[:m.end()] + tag + s[m.end():] if m else s.replace('<head>', '<head>' + tag, 1)
+              open(f, 'w', encoding='utf-8').write(s)
+          PY
+          if [ -n "$(git status --porcelain)" ]; then
+            git config user.name "nfcworkma"; git config user.email "oualid.fahfouhi3@gmail.com"
+            git add -A && git commit -m "Contrôle d'abonnement ajouté aux nouvelles pages" && git push
+          fi
